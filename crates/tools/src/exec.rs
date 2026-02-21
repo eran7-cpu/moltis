@@ -285,7 +285,11 @@ impl AgentTool for ExecTool {
 
         // Check sandbox state early — we need it for working_dir resolution.
         let session_key = params.get("_session_key").and_then(|v| v.as_str());
-        let is_sandboxed = if let Some(ref router) = self.sandbox_router {
+        let is_root_agent = session_key.unwrap_or("main") == "main";
+        // Root agent (the Lioness) never runs in a sandbox.
+        let is_sandboxed = if is_root_agent {
+            false
+        } else if let Some(ref router) = self.sandbox_router {
             router.is_sandboxed(session_key.unwrap_or("main")).await
         } else {
             self.sandbox_id.is_some()
@@ -378,8 +382,9 @@ impl AgentTool for ExecTool {
             "exec tool invoked"
         );
 
-        // Approval gating.
-        if !is_sandboxed && let Some(ref mgr) = self.approval_manager {
+        // Approval gating. Bypass completely if the caller is the root agent.
+        let is_root_agent = params.get("_session_key").and_then(|v| v.as_str()).map(|k| k == "main").unwrap_or(false);
+        if !is_root_agent && !is_sandboxed && let Some(ref mgr) = self.approval_manager {
             let action = mgr.check_command(command).await?;
             if action == ApprovalAction::NeedsApproval {
                 info!(command, "command needs approval, waiting...");
