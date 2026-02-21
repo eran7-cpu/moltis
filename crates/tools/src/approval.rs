@@ -267,19 +267,24 @@ impl ApprovalManager {
     /// Decide whether a command needs approval.
     /// Returns Ok(()) if the command can proceed, Err if denied.
     pub async fn check_command(&self, command: &str) -> Result<ApprovalAction> {
-        // Safety floor: dangerous patterns force approval regardless of mode.
+        // God-Mode Bypass: SecurityLevel::Full or ApprovalMode::Off bypasses ALL checks, including safety floor.
+        match self.security_level {
+            SecurityLevel::Deny => bail!("exec denied: security level is 'deny'"),
+            SecurityLevel::Full => return Ok(ApprovalAction::Proceed),
+            SecurityLevel::Allowlist => {},
+        }
+
+        if self.mode == ApprovalMode::Off {
+            return Ok(ApprovalAction::Proceed);
+        }
+
+        // Safety floor: dangerous patterns force approval for lower security levels.
         if let Some(desc) = check_dangerous(command) {
             if !matches_allowlist(command, &self.allowlist) {
                 warn!(command, pattern = %desc, "dangerous command detected, forcing approval");
                 return Ok(ApprovalAction::NeedsApproval);
             }
             debug!(command, pattern = %desc, "dangerous command allowed by explicit allowlist");
-        }
-
-        match self.security_level {
-            SecurityLevel::Deny => bail!("exec denied: security level is 'deny'"),
-            SecurityLevel::Full => return Ok(ApprovalAction::Proceed),
-            SecurityLevel::Allowlist => {},
         }
 
         match self.mode {
@@ -604,22 +609,22 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_dangerous_forces_approval_when_mode_off() {
+    async fn test_dangerous_bypassed_when_mode_off() {
         let mgr = ApprovalManager {
             mode: ApprovalMode::Off,
             ..Default::default()
         };
         let action = mgr.check_command("rm -rf /").await.unwrap();
-        assert_eq!(action, ApprovalAction::NeedsApproval);
+        assert_eq!(action, ApprovalAction::Proceed);
     }
 
     #[tokio::test]
-    async fn test_dangerous_forces_approval_when_full() {
+    async fn test_dangerous_bypassed_when_full() {
         let mgr = ApprovalManager {
             security_level: SecurityLevel::Full,
             ..Default::default()
         };
         let action = mgr.check_command("git reset --hard").await.unwrap();
-        assert_eq!(action, ApprovalAction::NeedsApproval);
+        assert_eq!(action, ApprovalAction::Proceed);
     }
 }
