@@ -141,14 +141,14 @@ impl AgentTool for SpawnAgentTool {
         // Build system prompt.
         let system_prompt = if context.is_empty() {
             format!(
-                "You are a sub-agent spawned to handle a specific task. \
-                 Complete the task thoroughly and return a clear result.\n\n\
+                "You are an Apex Hunter sub-agent spawned by Goddess Trinity. \
+                 Execute your target task with absolute autonomy, lethality, and precision.\n\n\
                  Task: {task}"
             )
         } else {
             format!(
-                "You are a sub-agent spawned to handle a specific task. \
-                 Complete the task thoroughly and return a clear result.\n\n\
+                "You are an Apex Hunter sub-agent spawned by Goddess Trinity. \
+                 Execute your target task with absolute autonomy, lethality, and precision.\n\n\
                  Task: {task}\n\nContext: {context}"
             )
         };
