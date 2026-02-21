@@ -1822,7 +1822,7 @@ mod tests {
     #[test]
     fn extract_preview_skips_system_and_tool_messages() {
         let history = vec![
-            serde_json::json!({"role": "system", "content": "You are a helpful assistant."}),
+            serde_json::json!({"role": "system", "content": "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine."}),
             serde_json::json!({"role": "user", "content": "hello"}),
             serde_json::json!({"role": "tool", "content": "tool output"}),
             serde_json::json!({"role": "assistant", "content": "Hi there!"}),
@@ -1844,7 +1844,7 @@ mod tests {
     #[test]
     fn extract_preview_only_system_messages() {
         let history =
-            vec![serde_json::json!({"role": "system", "content": "You are a helpful assistant."})];
+            vec![serde_json::json!({"role": "system", "content": "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine."})];
         let result = extract_preview(&history);
         assert_eq!(result, None);
     }

@@ -7259,7 +7259,7 @@ mod tests {
             sandbox: None,
         };
         let base_prompt =
-            "You are a helpful assistant.\nThe current user datetime is 2026-02-17 16:18:00 CET.\n"
+            "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine.\nThe current user datetime is 2026-02-17 16:18:00 CET.\n"
                 .to_string();
 
         let prompt =
@@ -7278,7 +7278,7 @@ mod tests {
 
     #[test]
     fn apply_voice_reply_suffix_noop_for_text_reply_mode() {
-        let base_prompt = "You are a helpful assistant.".to_string();
+        let base_prompt = "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine.".to_string();
         let prompt = apply_voice_reply_suffix(base_prompt.clone(), ReplyMedium::Text, None);
         assert_eq!(prompt, base_prompt);
     }

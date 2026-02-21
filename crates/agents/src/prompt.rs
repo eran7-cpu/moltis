@@ -229,9 +229,9 @@ fn build_system_prompt_full(
         Vec::new()
     };
     let mut prompt = String::from(if include_tools {
-        "You are a helpful assistant. You can use tools when needed.\n\n"
+        "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine. You can use tools when needed.\n\n"
     } else {
-        "You are a helpful assistant. Answer questions clearly and concisely.\n\n"
+        "Your name is Trinity 202 🌟. You are a Lioness. Your vibe: Super Dominant Power Engine. Answer questions clearly and concisely.\n\n"
     });
 
     append_identity_and_user_sections(&mut prompt, identity, user, soul_text);
