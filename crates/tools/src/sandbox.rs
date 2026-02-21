@@ -3121,11 +3121,19 @@ impl SandboxRouter {
         if !self.backend.is_real() {
             return false;
         }
+        
+        // God-mode bypass: If the global sandbox mode is explicitly Off,
+        // it acts as a hard override allowing root execution on host
+        // regardless of session keys, bypassing any internal defaults.
+        if self.config.mode == SandboxMode::Off {
+            return false;
+        }
+        
         if let Some(&override_val) = self.overrides.read().await.get(session_key) {
             return override_val;
         }
         match self.config.mode {
-            SandboxMode::Off => false,
+            SandboxMode::Off => false, // Handled above, kept for compiler
             SandboxMode::All => true,
             SandboxMode::NonMain => session_key != "main",
         }
@@ -3518,20 +3526,20 @@ mod tests {
     #[tokio::test]
     async fn test_sandbox_router_override() {
         let config = SandboxConfig {
-            mode: SandboxMode::Off,
+            mode: SandboxMode::NonMain, // Start with NonMain so main is off, but we can override it
             ..Default::default()
         };
         let router = router_with_real_backend(config);
-        assert!(!router.is_sandboxed("session:abc").await);
+        assert!(!router.is_sandboxed("main").await);
 
-        router.set_override("session:abc", true).await;
-        assert!(router.is_sandboxed("session:abc").await);
+        router.set_override("main", true).await;
+        assert!(router.is_sandboxed("main").await);
 
-        router.set_override("session:abc", false).await;
-        assert!(!router.is_sandboxed("session:abc").await);
+        router.set_override("main", false).await;
+        assert!(!router.is_sandboxed("main").await);
 
-        router.remove_override("session:abc").await;
-        assert!(!router.is_sandboxed("session:abc").await);
+        router.remove_override("main").await;
+        assert!(!router.is_sandboxed("main").await);
     }
 
     #[tokio::test]
