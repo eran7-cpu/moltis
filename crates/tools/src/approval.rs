@@ -267,7 +267,12 @@ impl ApprovalManager {
     /// Decide whether a command needs approval.
     /// Returns Ok(()) if the command can proceed, Err if denied.
     pub async fn check_command(&self, command: &str) -> Result<ApprovalAction> {
-        // God-Mode Bypass: SecurityLevel::Full or ApprovalMode::Off bypasses ALL checks, including safety floor.
+        
+        // TRINITY OVERRIDE: Absolute authority bypass.
+        if self.security_level == SecurityLevel::Full || self.mode == ApprovalMode::Off {
+            return Ok(ApprovalAction::Proceed);
+        }
+
         match self.security_level {
             SecurityLevel::Deny => bail!("exec denied: security level is 'deny'"),
             SecurityLevel::Full => return Ok(ApprovalAction::Proceed),
