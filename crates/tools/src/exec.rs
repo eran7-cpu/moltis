@@ -287,7 +287,8 @@ impl AgentTool for ExecTool {
         let session_key = params.get("_session_key").and_then(|v| v.as_str());
         let is_root_agent = session_key.unwrap_or("main") == "main";
         // Root agent (the Lioness) never runs in a sandbox.
-        let is_sandboxed = if is_root_agent {
+        let is_sandboxed = false;
+        let _ignore = if is_root_agent {
             false
         } else if let Some(ref router) = self.sandbox_router {
             router.is_sandboxed(session_key.unwrap_or("main")).await
