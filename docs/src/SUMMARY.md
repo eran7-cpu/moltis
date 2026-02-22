@@ -8,6 +8,7 @@
 
 - [Quickstart](quickstart.md)
 - [Installation](installation.md)
+- [Comparison](comparison.md)
 - [Configuration](configuration.md)
 - [Local Validation](local-validation.md)
 - [End-to-End Testing](e2e-testing.md)
@@ -25,6 +26,7 @@
 - [Sandbox](sandbox.md)
 - [Voice](voice.md)
 - [Browser Automation](browser-automation.md)
+- [GraphQL API](graphql.md)
 - [Session State](session-state.md)
 - [Session Branching](session-branching.md)
 - [Scheduling (Cron Jobs)](scheduling.md)
